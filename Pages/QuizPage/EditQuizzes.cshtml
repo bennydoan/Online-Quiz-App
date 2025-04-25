@@ -1,0 +1,33 @@
+﻿@page
+@model Quiz_Application2.Pages.QuizPage.EditQuizzesModel
+@{
+
+}
+
+<h2>Edit Quiz</h2>
+
+<form method="post">
+    @* id = 0 we should ignore it otherwise it s gonna create one more *@
+    <input hidden asp-for="newQuiz.Id" /> 
+
+    <div class="form-group">
+        <label asp-for="newQuiz.Title">Title</label>
+        <input asp-for="newQuiz.Title" class="form-control" />
+        <span asp-validation-for="newQuiz.Title" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="newQuiz.Description">Description</label>
+        <textarea asp-for="newQuiz.Description" class="form-control"></textarea>
+        <span asp-validation-for="newQuiz.Description" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-success mt-2">Update Quiz</button>
+    <a asp-page="/QuizPage/Quizzes" class="btn btn-secondary mt-2">Back</a>
+   
+</form>
+
+
+        
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

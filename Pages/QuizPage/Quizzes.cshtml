@@ -1,7 +1,7 @@
 ﻿@page
 @model Quiz_Application2.Pages.QuizPage.QuizzesModel
 @{
-
+    var index = 1; 
 }
 
 <h2>Create a New Quiz</h2>
@@ -23,7 +23,7 @@
 <hr />
 
 
-<h2 class="mt-5">Existing Quizzes</h2>
+<h2 class="mt-5">Existing Quizzes!!!</h2>
 
 
 <table class="table">
@@ -39,17 +39,16 @@
         @foreach (var quiz in Model.Quizzes)
         {
             <tr>
-                <td>@quiz.Id</td>
+                    <td>@index</td>
                     <td>@quiz.Title</td>
                     <td>@quiz.Description</td>
                     <td>
-                        <a asp-page="./QuizDetails" asp-route-id="@quiz.Id" class="btn btn-info">View</a>
-                        <a asp-page="./EditQuiz" asp-route-id="@quiz.Id" class="btn btn-warning">Edit</a>
-                        <form method="post" asp-page-handler="Delete" asp-route-id="@quiz.Id" style="display:inline;">
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
+                        <a asp-page="./QuizDetails" asp-route-id="@quiz.Id" class="btn btn-info">View Question</a>
+                        <a asp-page="/QuizPage/EditQuizzes" asp-route-id="@quiz.Id" class="btn btn-warning">Edit</a>
+                        <a asp-page="/QuizPage/DeleteQuiz" asp-route-id="@quiz.Id" class="btn btn-danger">Delete</a>
                     </td>
-                </tr>
+             </tr>
+            index++;
          }
     </tbody>
        
