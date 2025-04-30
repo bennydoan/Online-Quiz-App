@@ -23,37 +23,46 @@
 
 <hr />
 
+@if (Model.Quizzes == null || !Model.Quizzes.Any())
+{
+    <div class="alert alert-danger text-center">
+        <strong>No quizzes available</strong>
+    </div>
+}
 
-<h2 class="mt-5">Existing Quizzes!!!</h2>
+else
+{
+    <h2 class="mt-5">Existing Quizzes!!!</h2>
 
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var quiz in Model.Quizzes)
-        {
+    <table class="table">
+        <thead>
             <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var quiz in Model.Quizzes)
+            {
+                <tr>
                     <td>@index</td>
                     <td>@quiz.Title</td>
                     <td>@quiz.Description</td>
                     <td>
-                        <a asp-page="./QuizDetails" asp-route-id="@quiz.Id" class="btn btn-info">View Question</a>
+                        <a asp-page="/QuestionPage/QuestionCreate" asp-route-id="@quiz.Id" class="btn btn-info">View Question</a>
                         <a asp-page="/QuizPage/EditQuizzes" asp-route-id="@quiz.Id" class="btn btn-warning">Edit</a>
                         <a asp-page="/QuizPage/DeleteQuiz" asp-route-id="@quiz.Id" class="btn btn-danger">Delete</a>
                     </td>
-             </tr>
-            index++;
-         }
-    </tbody>
-       
-</table>
+                </tr>
+                index++;
+            }
+        </tbody>
+
+    </table>
+}
 
         
 @section Scripts {
