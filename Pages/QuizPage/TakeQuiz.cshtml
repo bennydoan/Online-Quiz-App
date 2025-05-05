@@ -1,0 +1,49 @@
+﻿@page
+@model Quiz_Application2.Pages.QuizPage.TakeQuizModel
+@{
+    ViewData["Title"] = "Take Quiz";
+    int questionIndex = 1;
+}
+
+<div class="text-center mb-5">
+    <h1>Welcome to the <span class="text-success">@Model.QuizTitle</span> quiz! </h1>
+    <p>Test your knowledge and have fun!</p>
+</div>
+
+@if (Model.AnswerResults.Any())// Check if the user has already submitted answers
+
+{
+    <div class="alert alert-info text-center">
+        <h4>You got <span class="text-success">@Model.CorrectAnswerCount</span> out of <span class="text-primary">@Model.Questions.Count()</span> correct!</h4>
+    </div>
+}
+
+
+<form method="post">
+    <div>
+        @foreach (var q in Model.Questions)
+        {
+            <h4>@questionIndex. @q.Text</h4>
+            @foreach (var a in Model.Answers.Where(a => a.QuestionId == q.Id))
+            {
+                var isCorrect = Model.AnswerResults.ContainsKey(q.Id) && a.IsCorrect; // Check if the answer is correct
+                var isSelected = Model.AnswerResults.ContainsKey(q.Id) && Request.Form[$"Question_{q.Id}"] == a.Id.ToString(); // Check if the answer is selected
+
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="Question_@q.Id" value="@a.Id" id="Answer_@a.Id" required />
+                    <label class="form-check-label @(isCorrect ? "text-success fw-bolder" : isSelected ? "text-danger fw-bolder" : "")" for="Answer_@a.Id">
+                        @a.Text
+                    </label>
+                </div>
+            }
+            questionIndex++;
+        }
+    </div>
+
+    <div class="text-center mt-4">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a asp-page="TakeQuiz" asp-route-id="@Model.Questions.FirstOrDefault()?.QuizId" class="btn btn-warning">Redo</a>
+        <a asp-page="QuizIndex" class="btn btn-secondary">Cancel</a>
+
+    </div>
+</form>

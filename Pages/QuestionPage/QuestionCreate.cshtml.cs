@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Quiz_Application2.Data;
 using Quiz_Application2.Models;
 using System.Threading.Tasks;
@@ -19,8 +20,13 @@ namespace Quiz_Application2.Pages.QuestionPage
         }
 
         [BindProperty]
-        public Answer newAnswer { get; set; } // Property to bind the new answer object
-
+        public List<Answer> newAnswers { get; set; } = new List<Answer>
+         {
+            new Answer(),
+            new Answer(),
+            new Answer(),
+            new Answer()
+         };
 
         [BindProperty]
         public Question newQuestion { get; set; }
@@ -33,32 +39,42 @@ namespace Quiz_Application2.Pages.QuestionPage
 
         public void OnGet(int id)
         {
-            //Fetch the quiz title from the Quiz model
-
-            var quiz = _context.Quizzes.FirstOrDefault(q => q.Id == id);// FirstorDefault returns the first element of a sequence or a default value if no such element is found
+            // Fetch the quiz title
+            var quiz = _context.Quizzes.FirstOrDefault(q => q.Id == id);
             if (quiz != null)
             {
                 QuizTitle = quiz.Title; // Store the title for use in the Razor page
             }
 
-            newQuestion = new Question { QuizId = id }; // Pre-fill QuizId == route for the new question
-            Questions = _context.Questions.Where(q => q.QuizId == id).ToList(); // Fetch questions for the specific quiz
+            // Fetch all questions for the quiz
+            Questions = _context.Questions.Where(q => q.QuizId == id).ToList();
 
+            // Fetch all answers for the questions in the quiz
+            var questionIds = Questions.Select(q => q.Id).ToList();
+            Answers = _context.Answers.Where(a => questionIds.Contains(a.QuestionId)).ToList();
         }
+
 
         public async Task<IActionResult> OnPost(int id)
         {
+            // Set the QuizId for the new question
             newQuestion.QuizId = id;
 
+            // Save the question to generate its Id
             await _context.Questions.AddAsync(newQuestion);
-           
-            await _context.SaveChangesAsync();
-            return RedirectToPage("QuestionCreate",new {id});
+            await _context.SaveChangesAsync(); // Save changes to generate the QuestionId
 
+            // Set the QuestionId for each answer and save them
+            foreach (var answer in newAnswers)
+            {
+                answer.QuestionId = newQuestion.Id;
+            }
+            await _context.Answers.AddRangeAsync(newAnswers);
+            await _context.SaveChangesAsync(); // Save the answers
+
+            // Redirect to the OnGet method to refresh the data
+            return RedirectToPage("QuestionCreate", new { id });
         }
-
 
     }
 }
-
-
