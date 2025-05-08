@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Quiz_Application2.Data;
 
@@ -11,9 +12,11 @@ using Quiz_Application2.Data;
 namespace Quiz_Application2.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250507033849_change score to double")]
+    partial class changescoretodouble
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,9 +109,6 @@ namespace Quiz_Application2.Migrations
 
                     b.Property<DateTime>("TakenAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("percentage")
-                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

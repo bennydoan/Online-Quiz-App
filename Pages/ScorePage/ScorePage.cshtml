@@ -1,0 +1,27 @@
+﻿@page
+@model Quiz_Application2.Pages.QuizPage.ScorePageModel
+@{
+    ViewData["Title"] = "Score Page";
+}
+
+<h1>Score Page</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Quiz Title</th>
+            <th>Score(%)</th>
+            <th>Date Taken</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var result in Model.QuizResults)
+        {
+            <tr>
+                <td>@(result.Quiz?.Title ?? "Unknown Quiz")</td> <!-- Null check for Quiz -->
+                <td>@result.Score </td>
+                <td>@result.TakenAt.ToString("g")</td>
+            </tr>
+        }
+    </tbody>
+</table>

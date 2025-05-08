@@ -10,6 +10,7 @@ namespace Quiz_Application2.Pages.QuizPage
         private readonly AppDbContext _context;
 
         public string QuizTitle { get; set; } // Property to store the quiz title
+        public double percentage { get; set; } // Property to store the percentage score
         public int CorrectAnswerCount { get; set; } // Stores the count of correct answers
 
         public Dictionary<int, bool> AnswerResults { get; set; } = new Dictionary<int, bool>(); // Stores if the selected answer is correct (QuestionId -> IsCorrect)
@@ -69,6 +70,20 @@ namespace Quiz_Application2.Pages.QuizPage
                     }
                 }
             }
+
+            // Calculate the percentage
+            percentage = ((double)CorrectAnswerCount / Questions.Count()) * 100;
+
+            // Save the result to the database
+            var quizResult = new QuizResult
+            {
+                QuizId = id,
+                Score = percentage,
+                TakenAt = DateTime.Now
+            };
+
+            _context.QuizResults.Add(quizResult);
+            _context.SaveChanges();
 
             // Return to the same page with the results
             return Page();
