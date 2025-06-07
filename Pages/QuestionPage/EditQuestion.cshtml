@@ -1,9 +1,197 @@
-﻿@page
+﻿@page "{id:int}"
 @model Quiz_Application2.Pages.QuestionPage.EditQuestionModel
 @{
     ViewData["Title"] = "Edit Question";
 }
 
+<div class="container mt-4">
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="h4 mb-0">
+                <i class="fas fa-edit me-2"></i>Edit Question
+            </h2>
+        </div>
+        <div class="card-body">
+            <form method="post" id="editQuestionForm">
+                <input type="hidden" asp-for="Question.Id" />
+                <input type="hidden" asp-for="Question.QuizId" />
 
-<h2 class="text-center mb-4">Edit This Question?</h2>
+                <div class="mb-4">
+                    <label asp-for="Question.Text" class="form-label">Question Text</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="fas fa-question-circle"></i>
+                        </span>
+                        <textarea asp-for="Question.Text" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <span asp-validation-for="Question.Text" class="text-danger"></span>
+                </div>
+
+                <div class="answers-section">
+                    <h3 class="h5 mb-3">Answer Options</h3>
+                    <div id="answersContainer">
+                        @for (var i = 0; i < Model.Answers.Count; i++)
+                        {
+                            <div class="answer-option card mb-3">
+                                <div class="card-body">
+                                    <input type="hidden" asp-for="Answers[i].Id" />
+                                    <input type="hidden" asp-for="Answers[i].QuestionId" />
+                                    
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8 mb-3 mb-md-0">
+                                            <div class="input-group">
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </span>
+                                                <input asp-for="Answers[i].Text" class="form-control" placeholder="Enter answer option" required />
+                                            </div>
+                                            <span asp-validation-for="Answers[i].Text" class="text-danger"></span>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-check">
+                                                <input asp-for="Answers[i].IsCorrect" class="form-check-input" type="checkbox" />
+                                                <label asp-for="Answers[i].IsCorrect" class="form-check-label">
+                                                    Correct Answer
+                                                    <i class="fas fa-info-circle ms-1" data-bs-toggle="tooltip" title="Check this box if this is a correct answer"></i>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <button type="button" class="btn btn-outline-danger btn-sm remove-answer" onclick="removeAnswer(this)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="text-center mb-4">
+                        <button type="button" class="btn btn-outline-primary" onclick="addAnswer()">
+                            <i class="fas fa-plus me-2"></i>Add Answer Option
+                        </button>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-page="/QuestionPage/QuestionCreate" asp-route-id="@Model.Question.QuizId" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Questions
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+
+        function addAnswer() {
+            const container = document.getElementById('answersContainer');
+            const answerCount = container.children.length;
+            
+            const answerHtml = `
+                <div class="answer-option card mb-3">
+                    <div class="card-body">
+                        <input type="hidden" name="Answers[${answerCount}].QuestionId" value="@Model.Question.Id" />
+                        <div class="row align-items-center">
+                            <div class="col-md-8 mb-3 mb-md-0">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-check-circle"></i>
+                                    </span>
+                                    <input name="Answers[${answerCount}].Text" class="form-control" placeholder="Enter answer option" required />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input name="Answers[${answerCount}].IsCorrect" class="form-check-input" type="checkbox" />
+                                    <label class="form-check-label">
+                                        Correct Answer
+                                        <i class="fas fa-info-circle ms-1" data-bs-toggle="tooltip" title="Check this box if this is a correct answer"></i>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-outline-danger btn-sm remove-answer" onclick="removeAnswer(this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', answerHtml);
+            updateAnswerIndexes();
+            
+            // Reinitialize tooltips for new elements
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+        }
+
+        function removeAnswer(button) {
+            const answerOption = button.closest('.answer-option');
+            const container = document.getElementById('answersContainer');
+            
+            if (container.children.length > 2) {
+                answerOption.remove();
+                updateAnswerIndexes();
+            } else {
+                alert('A question must have at least 2 answer options.');
+            }
+        }
+
+        function updateAnswerIndexes() {
+            const container = document.getElementById('answersContainer');
+            const answers = container.getElementsByClassName('answer-option');
+            
+            Array.from(answers).forEach((answer, index) => {
+                const inputs = answer.getElementsByTagName('input');
+                Array.from(inputs).forEach(input => {
+                    const name = input.getAttribute('name');
+                    if (name) {
+                        input.setAttribute('name', name.replace(/\[\d+\]/, `[${index}]`));
+                    }
+                });
+            });
+        }
+
+        // Validate at least one correct answer before form submission
+        document.getElementById('editQuestionForm').addEventListener('submit', function(e) {
+            const correctAnswers = document.querySelectorAll('input[name$=".IsCorrect"]:checked').length;
+            if (correctAnswers === 0) {
+                e.preventDefault();
+                alert('Please mark at least one answer as correct.');
+            }
+        });
+
+        // Auto-dismiss alerts after 5 seconds
+        window.setTimeout(function() {
+            const alert = document.querySelector('.alert');
+            if (alert) {
+                alert.classList.remove('show');
+            }
+        }, 5000);
+    </script>
+}

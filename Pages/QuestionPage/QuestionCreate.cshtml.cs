@@ -37,10 +37,10 @@ namespace Quiz_Application2.Pages.QuestionPage
 
         public IEnumerable<SelectListItem> QuizList { get; set; }
 
-        public void OnGet(int id)
+        public void OnGet(int id) // id here is the quizid
         {
             // Fetch the quiz title
-            var quiz = _context.Quizzes.FirstOrDefault(q => q.Id == id);
+            var quiz = _context.Quizzes.FirstOrDefault(q => q.Id == id); //Linq
             if (quiz != null)
             {
                 QuizTitle = quiz.Title; // Store the title for use in the Razor page
@@ -50,8 +50,8 @@ namespace Quiz_Application2.Pages.QuestionPage
             Questions = _context.Questions.Where(q => q.QuizId == id).ToList();
 
             // Fetch all answers for the questions in the quiz
-            var questionIds = Questions.Select(q => q.Id).ToList();
-            Answers = _context.Answers.Where(a => questionIds.Contains(a.QuestionId)).ToList();
+            var questionIds = Questions.Select(q => q.Id).ToList(); //  extracts the IDs of all the retrieved questions into a list (questionIds).
+            Answers = _context.Answers.Where(a => questionIds.Contains(a.QuestionId)).ToList(); // find all answers where the QuestionId matches any of the IDs in questionIds.
         }
 
 

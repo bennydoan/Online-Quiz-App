@@ -12,7 +12,5 @@ namespace Quiz_Application2.Data
         public DbSet<Question> Questions { get; set; }
         public DbSet<Answer> Answers { get; set; }
         public DbSet<QuizResult> QuizResults { get; set; }
-
-        
     }
 }
